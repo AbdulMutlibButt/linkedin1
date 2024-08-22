@@ -8,7 +8,7 @@ import Event from '@mui/icons-material/Event';
 import CalendarMonth from '@mui/icons-material/CalendarMonth';
 import Post from './Post';
 import { db } from './firebase';
-import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, onSnapshot, query, orderBy, } from 'firebase/firestore';
 import { serverTimestamp } from 'firebase/firestore';
 
 const Feed = () => {
@@ -16,7 +16,7 @@ const Feed = () => {
     const [posts, setPosts] = useState([])
 
     useEffect(() => {
-        const postsCollection = collection(db, "posts");
+        const postsCollection = query(collection(db, "posts"), orderBy("timestamp", "desc"));
         const unsubscribe = onSnapshot(postsCollection, (snapshot) =>
             setPosts(snapshot.docs.map((doc) => ({
                 id: doc.id,
@@ -43,6 +43,7 @@ const Feed = () => {
         } catch (error) {
             console.error("Error adding document: ", error);
         }
+        setInput("");
     };
     return (
         <div className='Feed'>
@@ -65,7 +66,6 @@ const Feed = () => {
                 <Post key={id} name={name} description={description} message={message} photoUrl={photoUrl} />
 
             ))}
-            <Post name="mutlib" description="This is a test" message="WOW this worked" photoUrl="" />
 
         </div>
     )
